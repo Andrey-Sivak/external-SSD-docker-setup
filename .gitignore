@@ -1,0 +1,21 @@
+# 1. Exclude everything
+*
+
+# 2. Allow (cancel exclucion) for .gitignore
+!.gitignore
+
+# 3. Allow (cancel exclucion) for folders
+!docker_data/
+!projects/
+
+# 4. Allow folders content.
+!docker_data/**
+!projects/**
+
+projects/my-wordpress-site/html/*
+!projects/my-wordpress-site/html/index.txt
+
+docker_data/wordpress/mariadb/*
+!docker_data/wordpress/mariadb/index.txt
+
+.env

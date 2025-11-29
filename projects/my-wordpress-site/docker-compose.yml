@@ -1,0 +1,74 @@
+services:
+  # 1. DB Service (MariaDB)
+  db:
+    image: mariadb:10.6
+    container_name: wordpress_db
+    restart: always
+    environment:
+      # Apply environment variables from .env
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      # IMPORTANT: store data on SSD.
+      # Ensure, that the folder /mnt/dev_ssd/docker_data/ exist.
+      - /media/kent/dev_ssd/docker_data/wordpress/mariadb:/var/lib/mysql
+    networks:
+      - wp_network
+
+  # 2. PHP-FPM Service
+  php:
+    image: wordpress:php8.1-fpm-alpine # Light
+    container_name: wordpress_php
+    restart: always
+    volumes:
+      # Bind Mount for code (PhpStorm has acceess to codebase on SSD)
+      - ./html:/var/www/html
+      - ./config/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini # General settings
+    environment:
+      # DB relation by service name 'db'
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - wp_network
+
+  # 3. Web-server service (Nginx)
+  nginx:
+    image: nginx:stable-alpine # Light image
+    container_name: wordpress_nginx
+    restart: always
+    ports:
+      # Browser access: http://localhost:8080
+      - "8080:80"
+    volumes:
+      - ./html:/var/www/html:ro # Readonly codebase
+      - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf # Nginx configuration
+    depends_on:
+      - php
+    networks:
+      - wp_network
+
+  # 4. phpMyAdmin service
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: wordpress_pma
+    restart: always
+    ports:
+      # Browser access: http://localhost:8081
+      - "8081:80"
+    environment:
+      PMA_HOST: db # DB service name
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    depends_on:
+      - db
+    networks:
+      - wp_network
+
+# Isolated network
+networks:
+  wp_network:
+    driver: bridge # Create isolated network for current project only
+
