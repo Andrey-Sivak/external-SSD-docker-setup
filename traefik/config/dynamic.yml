@@ -1,0 +1,16 @@
+# TLS сертификаты
+tls:
+  certificates:
+    - certFile: /etc/traefik/certs/_wildcard.localhost+3.pem
+      keyFile: /etc/traefik/certs/_wildcard.localhost+3-key.pem
+
+# HTTP маршруты
+http:
+  routers:
+    # Dashboard Traefik
+    dashboard-router:
+      rule: Host(`traefik.localhost`)
+      entryPoints:
+        - https
+      service: api@internal
+      tls: {}

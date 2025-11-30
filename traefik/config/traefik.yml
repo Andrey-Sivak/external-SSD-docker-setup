@@ -1,0 +1,37 @@
+# Entry points
+entryPoints:
+  http:
+    address: ":80"
+    # Автоматический редирект HTTP -> HTTPS (опционально, можете раскомментировать)
+    # http:
+    #   redirections:
+    #     entryPoint:
+    #       to: https
+    #       scheme: https
+  https:
+    address: ":443"
+
+# API / DASHBOARD
+api:
+  dashboard: true
+  insecure: false
+
+# Providers
+providers:
+  # 1. Docker Provider (для проектов: wp, react, next)
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+  
+  # 2. Provider File (для внутренних маршрутов и TLS)
+  file:
+    filename: /etc/traefik/dynamic.yml
+    watch: true
+
+# Логирование (опционально, для отладки)
+log:
+  level: INFO
+  filePath: /var/log/traefik/traefik.log
+
+accessLog:
+  filePath: /var/log/traefik/access.log

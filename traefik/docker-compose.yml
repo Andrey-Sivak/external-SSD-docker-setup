@@ -1,0 +1,30 @@
+services:
+  traefik:
+    image: traefik:v2.11
+    container_name: traefik
+    restart: always
+    security_opt:
+      # Important for access to Docker socket
+      - no-new-privileges:true
+    ports:
+      # Open ports 80 & 443 only
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /media/kent/dev_ssd/traefik/config/traefik.yml:/etc/traefik/traefik.yml:ro
+      - /media/kent/dev_ssd/traefik/config/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - /media/kent/dev_ssd/traefik/certs:/etc/traefik/certs:ro
+      - /media/kent/dev_ssd/traefik/acme.json:/etc/traefik/acme.json
+      - /media/kent/dev_ssd/traefik/logs:/var/log/traefik
+    command:
+      # Enable docker provider
+      - "--providers.docker=true"
+      # Enable API/dashboard
+      - "--api.dashboard=true"
+    networks:
+      - traefik-proxy-net # Connect to global network
+
+networks:
+  traefik-proxy-net:
+    external: true
