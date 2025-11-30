@@ -40,9 +40,13 @@ services:
     image: nginx:stable-alpine # Light image
     container_name: wordpress_nginx
     restart: always
-    ports:
-      # Browser access: http://localhost:8080
-      - "8080:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wp1.rule=Host(`wp1.localhost`)"
+      - "traefik.http.routers.wp1.entrypoints=https"
+      - "traefik.http.routers.wp1.tls=true"
+      - "traefik.http.services.wordpress_nginx.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik-proxy-net"
     volumes:
       - ./html:/var/www/html:ro # Readonly codebase
       - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf # Nginx configuration
@@ -50,6 +54,7 @@ services:
       - php
     networks:
       - wp_network
+      - traefik-proxy-net
 
   # 4. phpMyAdmin service
   phpmyadmin:
@@ -71,4 +76,6 @@ services:
 networks:
   wp_network:
     driver: bridge # Create isolated network for current project only
+  traefik-proxy-net:
+    external: true # Set it up to connect for a global Traefik network
 
