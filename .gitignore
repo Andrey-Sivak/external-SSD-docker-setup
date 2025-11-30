@@ -7,14 +7,26 @@
 # 3. Allow (cancel exclucion) for folders
 !docker_data/
 !projects/
+!traefik/
 
-# 4. Allow folders content.
+# 4. Allow folders content
 !docker_data/**
 !projects/**
+!traefik/**
 
+# 5. Allow /html/index.txt to keep the html folder exist
 projects/my-wordpress-site/html/*
 !projects/my-wordpress-site/html/index.txt
 
+# 6. Allow /logs/index.txt to keep the logs folder exist
+traefik/logs/*
+!traefik/logs/index.txt
+
+# 7. Allow /acme.json/index.txt to keep the acme.json folder exist
+traefik/acme.json/*
+!traefik/acme.json/index.txt
+
+# 8. Allow /mariadb/index.txt to keep the mariadb folder exist
 docker_data/wordpress/mariadb/*
 !docker_data/wordpress/mariadb/index.txt
 
