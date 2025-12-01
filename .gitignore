@@ -1,8 +1,9 @@
 # 1. Exclude everything
 *
 
-# 2. Allow (cancel exclucion) for .gitignore
+# 2. Allow (cancel exclucion) for .gitignore & README.md
 !.gitignore
+!README.md
 
 # 3. Allow (cancel exclucion) for folders
 !docker_data/
