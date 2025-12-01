@@ -35,3 +35,4 @@ log:
 
 accessLog:
   filePath: /var/log/traefik/access.log
+
