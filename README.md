@@ -13,6 +13,7 @@
 ---
 
 ## Repository Structure
+```
 .
 ├── projects/
 │ ├── wp-template/ # WordPress Boilerplate (Current Implementation)
@@ -22,6 +23,7 @@
 │ ├── config/
 │ └── certs/
 └── README.md
+```
 
 ---
 
