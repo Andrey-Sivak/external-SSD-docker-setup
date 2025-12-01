@@ -14,9 +14,10 @@
 !projects/**
 !traefik/**
 
-# 5. Allow /html/index.txt to keep the html folder exist
-projects/my-wordpress-site/html/*
-!projects/my-wordpress-site/html/index.txt
+# 5. Allow template & automatation script
+!projects/wp-template/
+!prejects/wp-template/**
+!projects/create_wp_site.sh
 
 # 6. Allow /logs/index.txt to keep the logs folder exist
 traefik/logs/*

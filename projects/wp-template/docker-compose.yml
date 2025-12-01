@@ -12,8 +12,8 @@ services:
       MARIADB_PASSWORD: ${DB_PASSWORD}
     volumes:
       # IMPORTANT: store data on SSD.
-      # Ensure, that the folder /mnt/dev_ssd/docker_data/ exist.
-      - /media/kent/dev_ssd/docker_data/wordpress/mariadb:/var/lib/mysql
+      # This is the neutral volume name that will be replaced.
+      - /media/kent/dev_ssd/docker_data/wordpress/db_volume:/var/lib/mysql
     networks:
       - wp_network
 
@@ -23,7 +23,7 @@ services:
     container_name: wordpress_php
     restart: always
     volumes:
-      # Bind Mount for code (PhpStorm has acceess to codebase on SSD)
+      # Bind Mount for code (PhpStorm has access to codebase on SSD)
       - ./html:/var/www/html
       - ./config/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini # General settings
     environment:
@@ -42,9 +42,10 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.wp1.rule=Host(`wp1.localhost`)"
-      - "traefik.http.routers.wp1.entrypoints=https"
-      - "traefik.http.routers.wp1.tls=true"
+      # Neutral router name and domain for replacement:
+      - "traefik.http.routers.wordpress.rule=Host(`wordpress.localhost`)"
+      - "traefik.http.routers.wordpress.entrypoints=https"
+      - "traefik.http.routers.wordpress.tls=true"
       - "traefik.http.services.wordpress_nginx.loadbalancer.server.port=80"
       - "traefik.docker.network=traefik-proxy-net"
     volumes:
@@ -61,9 +62,14 @@ services:
     image: phpmyadmin/phpmyadmin
     container_name: wordpress_pma
     restart: always
-    ports:
-      # Browser access: http://localhost:8081
-      - "8081:80"
+    labels:
+      - "traefik.enable=true"
+      # Neutral router name and domain for replacement:
+      - "traefik.http.routers.wordpress-pma.rule=Host(`pma.wordpress.localhost`)" 
+      - "traefik.http.routers.wordpress-pma.entrypoints=https"
+      - "traefik.http.routers.wordpress-pma.tls=true"
+      - "traefik.http.services.wordpress_pma.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik-proxy-net"
     environment:
       PMA_HOST: db # DB service name
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
@@ -71,6 +77,7 @@ services:
       - db
     networks:
       - wp_network
+      - traefik-proxy-net
 
 # Isolated network
 networks:
@@ -78,4 +85,3 @@ networks:
     driver: bridge # Create isolated network for current project only
   traefik-proxy-net:
     external: true # Set it up to connect for a global Traefik network
-
